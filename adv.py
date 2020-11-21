@@ -105,6 +105,8 @@ def traverse_rooms(player, world):
     update_graph(player, traversal_path)
     print(traversal_graph)
     while '?' in traversal_graph[player.current_room.id].values():
+        
+        # The issue is that I need to update the graph before I check for possible directions
         possible_directions = [direction for direction in traversal_graph[player.current_room.id].keys() if traversal_graph[player.current_room.id][direction] == '?' ]
         random_direction = random.choice(possible_directions)
         new_direction = random_direction
@@ -115,14 +117,27 @@ def traverse_rooms(player, world):
         if '?' not in traversal_graph[player.current_room.id].values():
             path_to_unexplored = bfs(player, player.current_room.id)
             print(path_to_unexplored)
-            starting_room = path_to_unexplored[0]
-
-
-
-            for room in path_to_unexplored:
-                room_exits = traversal_graph[room]
+            
+            exit_list=[]
+            if path_to_unexplored == None:
+                return 
+            else:
+                for i in range(len(path_to_unexplored) - 1):
+                    room_exits = traversal_graph[path_to_unexplored[i]]
+                    # print('room exits', room_exits)
                     for room_exit in room_exits:
-                        if room_exit
+                        #print('room exit', room_exit)
+                        #print('exits of exit', room_exits[room_exit])
+                        #print('path to unexplored', path_to_unexplored[i + 1])
+                        if room_exits[room_exit] == path_to_unexplored[i + 1]:
+                            traversal_path.append(room_exit)
+                            exit_list.append(room_exit)
+                            # print('final exit', room_exit)
+                print(exit_list)
+                for list_exit in exit_list:
+                    player.travel(list_exit)
+                prev_room_id = player.current_room.id
+                #traversal_path.append()
 
 
 
