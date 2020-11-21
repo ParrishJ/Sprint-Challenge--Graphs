@@ -113,7 +113,18 @@ def traverse_rooms(player, world):
         update_graph(player, traversal_path)
         print(traversal_graph)
         if '?' not in traversal_graph[player.current_room.id].values():
-            print(bfs(player, player.current_room.id))
+            path_to_unexplored = bfs(player, player.current_room.id)
+            print(path_to_unexplored)
+            starting_room = path_to_unexplored[0]
+
+
+
+            for room in path_to_unexplored:
+                room_exits = traversal_graph[room]
+                    for room_exit in room_exits:
+                        if room_exit
+
+
 
     """ 
     visited_rooms = set()
