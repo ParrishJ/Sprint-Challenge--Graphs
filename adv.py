@@ -12,10 +12,10 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-#map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -30,7 +30,8 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
-#################################################################################################################################################################
+##### My Implementation ######################################################################################
+
 def traverse_rooms(player, world):
     visited_rooms = set()
     traversal_graph = {}
@@ -39,10 +40,6 @@ def traverse_rooms(player, world):
 
     player.current_room = world.starting_room
     visited_rooms.add(player.current_room)
-    print('player current', player.current_room)
-        
-#################################################################################################################################################################
-  
     
     def get_opposite_direction(prev_direction):
         if prev_direction == 'n':
@@ -100,13 +97,11 @@ def traverse_rooms(player, world):
                     newPath = list(currentPath)
                     newPath.append(neighbor)
                     queue.append(newPath)
-#########################################################################################################################################
 
     update_graph(player, traversal_path)
     print(traversal_graph)
     while '?' in traversal_graph[player.current_room.id].values():
-        
-        # The issue is that I need to update the graph before I check for possible directions
+
         possible_directions = [direction for direction in traversal_graph[player.current_room.id].keys() if traversal_graph[player.current_room.id][direction] == '?' ]
         random_direction = random.choice(possible_directions)
         new_direction = random_direction
@@ -124,112 +119,21 @@ def traverse_rooms(player, world):
             else:
                 for i in range(len(path_to_unexplored) - 1):
                     room_exits = traversal_graph[path_to_unexplored[i]]
-                    # print('room exits', room_exits)
+                    
                     for room_exit in room_exits:
-                        #print('room exit', room_exit)
-                        #print('exits of exit', room_exits[room_exit])
-                        #print('path to unexplored', path_to_unexplored[i + 1])
+                        
                         if room_exits[room_exit] == path_to_unexplored[i + 1]:
-                            traversal_path.append(room_exit)
                             exit_list.append(room_exit)
-                            # print('final exit', room_exit)
+                            
                 print(exit_list)
                 for list_exit in exit_list:
+                    traversal_path.append(list_exit)
                     player.travel(list_exit)
                 prev_room_id = player.current_room.id
-                #traversal_path.append()
-
-
-
-    """ 
-    visited_rooms = set()
-    traversal_graph = {}
-    prev_room_id = None
-    
-
-    player.current_room = world.starting_room
-    visited_rooms.add(player.current_room)
-
-
-    update_graph(player, traversal_path)
-    print(traversal_graph)
-     """
-    
-    """ 
-    while '?' in traversal_graph[player.current_room.id].values():
-        possible_directions = [direction for direction in traversal_graph[player.current_room.id].keys() if traversal_graph[player.current_room.id][direction] == '?' ]
-        random_direction = random.choice(possible_directions)
-        new_direction = random_direction
-        traversal_path.append(new_direction)
-        player.travel(new_direction)
-        update_graph(player, traversal_path)
-        print(traversal_graph) 
-        """
-
-   
-
-    """ 
-    def recursive_dft_helper(direction, graph):
-        player.travel(direction)
-        traversal_path.append(direction)
-        visited_rooms.add(player.current_room)
-        update_graph(player, traversal_path)
-        helper_exits = player.current_room.get_exits()
-        print(traversal_graph)
-
-        while '?' in traversal_graph[player.current_room.id].values():
-            possible_directions = [direction for direction in traversal_graph[player.current_room.id].keys() if traversal_graph[player.current_room.id][direction] == '?' ]
-            random_direction = random.choice(possible_directions)
-            recursive_dft_helper( random_direction, traversal_graph) """
-
-    """ 
-    possible_directions_helper = [new_direction for new_direction in helper_exits if traversal_graph[player.current_room.id][new_direction] == '?' ]
-    if len(possible_directions_helper) != 0:
-        for possible_direction_helper in possible_directions_helper:
-            recursive_dft_helper(possible_direction_helper, traversal_graph)
-    else:
-        return 
-    """
-
-
-    """ while '?' in traversal_graph[player.current_room.id].values():
-        possible_directions = [new_direction for new_direction in player.current_room.get_exits() if traversal_graph[player.current_room.id][new_direction] == '?' ]
-        random_direction = random.choice(possible_directions)
-        recursive_dft_helper( random_direction, traversal_graph) 
-    """
-        
+                 
 traverse_rooms(player, world)
     
-"""     update_graph(player, traversal_path)
 
-    new_direction = 'n'
-    traversal_path.append(new_direction)
-    player.travel(new_direction)
-    update_graph(player, traversal_path)
-
-    new_direction = 'n'
-    traversal_path.append(new_direction)
-    player.travel(new_direction)
-    update_graph(player, traversal_path)
-    print(traversal_graph)
-
-    new_direction = 's'
-    traversal_path.append(new_direction)
-    player.travel(new_direction)
-    update_graph(player, traversal_path)
-    print(traversal_graph)
-
-    new_direction = 's'
-    traversal_path.append(new_direction)
-    player.travel(new_direction)
-    update_graph(player, traversal_path)
-    print(traversal_graph)
-
-    new_direction = 'n'
-    traversal_path.append(new_direction)
-    player.travel(new_direction)
-    update_graph(player, traversal_path)
-    print(traversal_graph)   """
 
 
 
