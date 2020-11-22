@@ -2,6 +2,7 @@ from room import Room
 from player import Player
 from world import World
 
+from collections import deque
 import random
 from ast import literal_eval
 
@@ -29,6 +30,111 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+##### My Implementation ######################################################################################
+
+def traverse_rooms(player, world):
+    visited_rooms = set()
+    traversal_graph = {}
+    prev_room_id = None
+    # possible_direction = ['n', 's', 'e', 'w']
+
+    player.current_room = world.starting_room
+    visited_rooms.add(player.current_room)
+    
+    def get_opposite_direction(prev_direction):
+        if prev_direction == 'n':
+            return 's'
+        if prev_direction == 's':
+            return 'n'
+        if prev_direction == 'w':
+            return 'e'
+        if prev_direction == 'e':
+            return 'w'
+    
+    def update_graph(player, traversal_path):
+        nonlocal prev_room_id 
+        visited_rooms.add(player.current_room)
+        current_exits = player.current_room.get_exits()
+        
+        if len(traversal_path) > 0:
+            prev_direction = traversal_path[-1]
+
+        
+
+        #updats current room on graph
+        for current_exit in current_exits:
+            if player.current_room.id not in traversal_graph:
+                traversal_graph[player.current_room.id] = {current_exit: '?'}
+            else: 
+                if current_exit in traversal_graph[player.current_room.id]:
+                    continue
+                else: 
+                    traversal_graph[player.current_room.id][current_exit] = '?'
+        
+        # Updates previous and current rooms on graph
+        if prev_room_id != None:
+            opposite_of_prev_direction = get_opposite_direction(prev_direction)
+            if traversal_graph[prev_room_id][prev_direction] == '?':
+                traversal_graph[prev_room_id][prev_direction] = player.current_room.id
+            if traversal_graph[player.current_room.id][opposite_of_prev_direction] == '?':
+               traversal_graph[player.current_room.id][opposite_of_prev_direction] = prev_room_id
+        
+        prev_room_id = player.current_room.id
+
+    def bfs(player, starting_room_id):
+        visited = set()
+        queue = deque()
+        queue.append([starting_room_id])
+        while len(queue) > 0:
+            currentPath = queue.popleft()
+            currentNode = currentPath[-1]
+            if '?' in traversal_graph[currentNode].values():
+                return currentPath
+            if currentNode not in visited:
+                visited.add(currentNode)
+                print(currentNode)
+                for neighbor in traversal_graph[currentNode].values():
+                    newPath = list(currentPath)
+                    newPath.append(neighbor)
+                    queue.append(newPath)
+
+    update_graph(player, traversal_path)
+    print(traversal_graph)
+    while '?' in traversal_graph[player.current_room.id].values():
+
+        possible_directions = [direction for direction in traversal_graph[player.current_room.id].keys() if traversal_graph[player.current_room.id][direction] == '?' ]
+        random_direction = random.choice(possible_directions)
+        new_direction = random_direction
+        traversal_path.append(new_direction)
+        player.travel(new_direction)
+        update_graph(player, traversal_path)
+        print(traversal_graph)
+        if '?' not in traversal_graph[player.current_room.id].values():
+            path_to_unexplored = bfs(player, player.current_room.id)
+            print(path_to_unexplored)
+            
+            exit_list=[]
+            if path_to_unexplored == None:
+                return 
+            else:
+                for i in range(len(path_to_unexplored) - 1):
+                    room_exits = traversal_graph[path_to_unexplored[i]]
+                    
+                    for room_exit in room_exits:
+                        
+                        if room_exits[room_exit] == path_to_unexplored[i + 1]:
+                            exit_list.append(room_exit)
+                            
+                print(exit_list)
+                for list_exit in exit_list:
+                    traversal_path.append(list_exit)
+                    player.travel(list_exit)
+                prev_room_id = player.current_room.id
+                 
+traverse_rooms(player, world)
+    
+
+
 
 
 # TRAVERSAL TEST - DO NOT MODIFY
@@ -51,7 +157,7 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
+""" player.current_room.print_room_description(player)
 while True:
     cmds = input("-> ").lower().split(" ")
     if cmds[0] in ["n", "s", "e", "w"]:
@@ -59,4 +165,4 @@ while True:
     elif cmds[0] == "q":
         break
     else:
-        print("I did not understand that command.")
+        print("I did not understand that command.") """
